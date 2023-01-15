@@ -2,6 +2,8 @@ package com.csmarton.auth.controller;
 
 import com.csmarton.auth.model.User;
 import com.csmarton.auth.repository.UserRepository;
+import com.csmarton.auth.service.UserService;
+import com.csmarton.auth.validation.UserAlreadyExistsException;
 import com.csmarton.auth.web.UserRequest;
 import com.csmarton.auth.web.UserResponse;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,8 @@ public class AuthController {
 
     private final UserRepository userRepository;
 
+    private final UserService userService;
+
     @GetMapping(value = "/users", produces = "application/json")
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = new ArrayList<>();
@@ -31,7 +35,10 @@ public class AuthController {
             }
 
             return new ResponseEntity<>(users, HttpStatus.OK);
-        } catch (Exception ex) {
+        } catch (UserAlreadyExistsException ex) {
+            throw ex;
+        }
+        catch (Exception ex) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -40,8 +47,8 @@ public class AuthController {
     UserResponse register(@Valid @RequestBody UserRequest userRequest) {
         User user = new User(userRequest.getUsername(), userRequest.getPassword());
 
-        User userEntity = userRepository.save(user);
+        Integer userId = userService.saveUser(user);
 
-        return new UserResponse(userEntity.getId().toString(), userEntity.getUsername());
+        return new UserResponse(userId.toString(), userRequest.getUsername());
     }
 }
