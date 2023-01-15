@@ -26,7 +26,7 @@ Password <input type = 'password' id = 'txtPassword'>
     })
 
     btnRegister.addEventListener("click", async () => {
-        const result = await fetch("/register", {"method": "POST", "headers": {"content-type": "application/json"}, "body": JSON.stringify({"user": txtUsername.value, "password": txtPassword.value})})
+        const result = await fetch("/user/register", {"method": "POST", "headers": {"content-type": "application/json"}, "body": JSON.stringify({"user": txtUsername.value, "password": txtPassword.value})})
         const jResult = await result.json();
         alert(JSON.stringify(jResult))
     })
