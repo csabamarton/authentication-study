@@ -3,6 +3,7 @@ package com.csmarton.auth.controller;
 import com.csmarton.auth.model.User;
 import com.csmarton.auth.repository.UserRepository;
 import com.csmarton.auth.service.UserService;
+import com.csmarton.auth.validation.BadCredentialException;
 import com.csmarton.auth.validation.UserAlreadyExistsException;
 import com.csmarton.auth.web.UserRequest;
 import com.csmarton.auth.web.UserResponse;
@@ -36,6 +37,7 @@ public class AuthController {
 
             return new ResponseEntity<>(users, HttpStatus.OK);
         } catch (UserAlreadyExistsException ex) {
+
             throw ex;
         }
         catch (Exception ex) {
@@ -50,5 +52,20 @@ public class AuthController {
         Integer userId = userService.saveUser(user);
 
         return new UserResponse(userId.toString(), userRequest.getUsername());
+    }
+
+    @PostMapping("/user/login")
+    ResponseEntity<UserResponse> login(@Valid @RequestBody UserRequest userRequest) {
+
+        try {
+            Integer userId = userService.validateCredential(userRequest.getUsername(), userRequest.getPassword());
+
+            if (userId != null) {
+                return new ResponseEntity<>(new UserResponse(userId.toString(), userRequest.getUsername()), HttpStatus.OK);
+            }
+        } catch (BadCredentialException ex) {
+            throw ex;
+        }
+        return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

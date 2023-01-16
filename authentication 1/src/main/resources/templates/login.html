@@ -20,7 +20,7 @@ Password <input type = 'password' id = 'txtPassword'>
     const txtPassword = document.getElementById("txtPassword");
 
     btnLogin.addEventListener("click", async () => {
-        const result = await fetch("/login", {"method": "POST", "headers": {"content-type": "application/json"}, "body": JSON.stringify({"user": txtUsername.value, "password": txtPassword.value})})
+        const result = await fetch("/user/login", {"method": "POST", "headers": {"content-type": "application/json"}, "body": JSON.stringify({"user": txtUsername.value, "password": txtPassword.value})})
         const jResult = await result.json();
         alert(JSON.stringify(jResult))
     })

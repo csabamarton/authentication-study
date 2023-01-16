@@ -2,6 +2,7 @@ package com.csmarton.auth.service;
 
 import com.csmarton.auth.model.User;
 import com.csmarton.auth.repository.UserRepository;
+import com.csmarton.auth.validation.BadCredentialException;
 import com.csmarton.auth.validation.UserAlreadyExistsException;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -23,5 +24,17 @@ public class UserServiceImpl implements UserService {
 
         User createdUser = userRepository.save(user);
         return createdUser.getId();
+    }
+
+    @Override
+    public Integer validateCredential(String userName, String password) {
+        User user = userRepository.findByUsernameAndPassword(userName, password);
+
+        if(user == null) {
+            throw new BadCredentialException(String.format("This User/Password credential doesn't exist!"));
+        }
+
+        return user.getId();
+
     }
 }
